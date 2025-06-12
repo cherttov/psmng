@@ -1,1 +1,12 @@
-{}
+[
+  {
+    "login": "user1",
+    "password": "kEpS65HYsUFz14Oknva3Iw==",
+    "iv": "\u002BlLY/A9PJjKrrNMCkeQXEw=="
+  },
+  {
+    "login": "user3",
+    "password": "Onko0Ri1xEFqxt\u002B2Q9gatQ==",
+    "iv": "vV0MJ\u002BpQPlb2fM53mYF3sQ=="
+  }
+]

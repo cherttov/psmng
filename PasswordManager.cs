@@ -1,22 +1,32 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Runtime.Intrinsics.Arm;
 using System.Security.Cryptography;
+using Aes = System.Security.Cryptography.Aes;
 using System.Text;
 using System.Text.Json;
 using System.Collections.Generic;
+using System.Data;
+
+
+public class PasswordEntry
+{
+    public required string login { get; set; }
+    public required string password { get; set; }
+    public required string iv { get; set; }
+    // public string? group { get; set; }
+}
 
 public static class PasswordManager
 {
-    // Path to data files (root_dir, data_dir, file)
+    // Path to store.json & master.key
     private static string filePath = Path.Combine(GetProjectRoot(), "data", "psmng_store.json");
     private static string masterKeyPath = Path.Combine(GetProjectRoot(), "data", "master.key");
 
-    // Private & public MasterKey for encryption
-    private static byte[] key = Array.Empty<byte>();
-    private static byte[] iv = Array.Empty<byte>();
+    private static byte[] _masterKey = Array.Empty<byte>();
 
-    // Static constructor on first run
+    // Constructor on run
     static PasswordManager()
     {
         string directory = Path.GetDirectoryName(filePath)!;
@@ -28,7 +38,7 @@ public static class PasswordManager
 
         if (!File.Exists(filePath))
         {
-            File.WriteAllText(filePath, "{}");
+            File.WriteAllText(filePath, "[]");
         }
 
         if (!File.Exists(masterKeyPath))
@@ -39,7 +49,7 @@ public static class PasswordManager
         LoadMasterKey();
     }
 
-    // Get absolute path To project file
+    // Get absolute path to project root
     private static string GetProjectRoot()
     {
         var dir = new DirectoryInfo(AppContext.BaseDirectory);
@@ -58,68 +68,77 @@ public static class PasswordManager
     }
 
     // Add command
-    public static void AddPassword(string login, string password)
+    public static void AddPassword(string _login, string _password)
     {
-        var encryptedPassword = EncryptData(password);
-        var oldJson = JsonDeserializer();
+        var _iv = GenerateIV();
+        var _encryptedPassword = EncryptData(_password, Convert.FromBase64String(_iv));
+        var _passwordEntries = JsonDeserializer();
 
-        // Add or update the password
-        oldJson[login] = encryptedPassword; // Dict[key] = value
+        var newEntry = new PasswordEntry
+        {
+            login = _login,
+            password = _encryptedPassword,
+            iv = _iv
+        };
 
-        // Save back to file
-        string updatedJson = JsonSerializer.Serialize(oldJson, new JsonSerializerOptions { WriteIndented = true });
+        _passwordEntries.Add(newEntry);
+
+        string updatedJson = JsonSerializer.Serialize(_passwordEntries, new JsonSerializerOptions { WriteIndented = true });
         File.WriteAllText(filePath, updatedJson);
 
-        Console.WriteLine($"Added {login} with password {password}");
+        Console.WriteLine($"Added {_login} with password {_password}");
     }
 
-    // Delete command
-    public static void DelPassword(string login)
+    // Del command
+    public static void DelPassword(string _login)
     {
-        var oldJson = JsonDeserializer();
+        var _passwordEntries = JsonDeserializer();
+        var _entryToRemove = _passwordEntries.FirstOrDefault(e => e.login == _login);
 
-        // Runs Remove() & returns false if didn't Remove()
-        if (oldJson.Remove(login))
+        if (_entryToRemove != null)
         {
-            string updatedJson = JsonSerializer.Serialize(oldJson, new JsonSerializerOptions { WriteIndented = true });
+            _passwordEntries.Remove(_entryToRemove);
+
+            string updatedJson = JsonSerializer.Serialize(_passwordEntries, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(filePath, updatedJson);
-            Console.WriteLine($"Deleted {login} from database.");
+            Console.WriteLine($"Deleted {_login} from database.");
         }
         else
         {
-            Console.WriteLine($"Login {login} not found.");
+            Console.WriteLine($"Login {_login} not found.");
         }
-        
     }
 
     // Get command
-    public static void GetPassword(string login)
+    public static void GetPassword(string _login)
     {
-        var json = JsonDeserializer();
+        var _passwordEntries = JsonDeserializer();
+        var _entryToRead = _passwordEntries.FirstOrDefault(e => e.login == _login);
 
-        foreach (var row in json)
+        if (_entryToRead != null)
         {
-            if (row.Key == login)
-            {
-                var decrypted = DecryptData(row.Value);
-                Console.WriteLine($"login: {row.Key}");
-                Console.WriteLine($"password: {decrypted}");
-                return;
-            }
+            var _ivToPass = Convert.FromBase64String(_entryToRead.iv);
+            var _decrypted = DecryptData(_entryToRead.password, _ivToPass);
+
+            Console.WriteLine($"login: {_login}");
+            Console.WriteLine($"password: {_decrypted}");
         }
-        Console.WriteLine("Login not found.");
+        else
+        {
+            Console.WriteLine($"Login {_login} not found.");
+        }
     }
 
     // List command
     public static void ListPassword()
     {
-        var json = JsonDeserializer();
+        var _passwordEntries = JsonDeserializer();
 
         Console.WriteLine("PASSWORD LIST:");
 
-        foreach (var row in json)
+        foreach (var entry in _passwordEntries)
         {
-            Console.WriteLine($"    {row.Key} : {row.Value}");
+            Console.WriteLine($"    {entry.login} : {entry.password}");
         }
     }
 
@@ -129,32 +148,31 @@ public static class PasswordManager
         Console.WriteLine($"psmng path : {filePath}");
     }
 
-    // Json deserializer
-    public static Dictionary<string, string> JsonDeserializer()
-    {
-        // New Dictionary
-        Dictionary<string, string> deserializedJson = new();
 
-        // If file already has data, load it
+    // Json deserializer
+    private static List<PasswordEntry> JsonDeserializer()
+    {
+        List<PasswordEntry> _passwordEntries = new();
+
         if (File.Exists(filePath))
         {
-            string json = File.ReadAllText(filePath);
-            if (!string.IsNullOrEmpty(json))
+            string _json = File.ReadAllText(filePath);
+            if (!string.IsNullOrEmpty(_json))
             {
-                // Converts json string into a usable dictionary
-                deserializedJson = JsonSerializer.Deserialize<Dictionary<string, string>>(json)!;
+                _passwordEntries = JsonSerializer.Deserialize<List<PasswordEntry>>(_json)!;
             }
         }
 
-        return deserializedJson;
+        return _passwordEntries;
     }
 
+
     // Encrypt data
-    private static string EncryptData(string plainText)
+    private static string EncryptData(string plainText, byte[] _iv)
     {
-        using System.Security.Cryptography.Aes aes = System.Security.Cryptography.Aes.Create();
-        aes.Key = key;
-        aes.IV = iv;
+        using Aes aes = Aes.Create();
+        aes.Key = _masterKey;
+        aes.IV = _iv;
 
         using var encryptor = aes.CreateEncryptor();
         using var ms = new MemoryStream();
@@ -168,14 +186,15 @@ public static class PasswordManager
     }
 
     // Decrypt data
-    private static string DecryptData(string EncryptedText)
+    private static string DecryptData(string encryptedText, byte[] _iv)
     {
-        using System.Security.Cryptography.Aes aes = System.Security.Cryptography.Aes.Create();
-        aes.Key = key;
-        aes.IV = iv;
+        using Aes aes = Aes.Create();
+        aes.Key = _masterKey;
+        aes.IV = _iv;
 
-        using var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
-        byte[] buffer = Convert.FromBase64String(EncryptedText);
+        using var decryptor = aes.CreateDecryptor();
+        byte[] buffer = Convert.FromBase64String(encryptedText);
+
         using var ms = new MemoryStream(buffer);
         using var cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read);
         using var sr = new StreamReader(cs);
@@ -183,30 +202,37 @@ public static class PasswordManager
         return sr.ReadToEnd();
     }
 
-    // Generate & store MasterKey & IV
+
+    // Generate and store MasterKey
     private static void GenerateMasterKey()
     {
         using var rnd = RandomNumberGenerator.Create();
 
-        key = new byte[32];
-        iv = new byte[16];
+        _masterKey = new byte[32];
+        rnd.GetBytes(_masterKey);
 
-        rnd.GetBytes(key);
-        rnd.GetBytes(iv);
-
-        string encoded = Convert.ToBase64String(key) + "\n" + Convert.ToBase64String(iv);
+        string encoded = Convert.ToBase64String(_masterKey);
         File.WriteAllText(masterKeyPath, encoded);
     }
 
-    // Loading MasterKey & IV
+    // Generate and return IV
+    private static string GenerateIV()
+    {
+        using var rnd = RandomNumberGenerator.Create();
+
+        var _iv = new byte[16];
+        rnd.GetBytes(_iv);
+
+        string encoded = Convert.ToBase64String(_iv);
+
+        return encoded;
+    }
+
     private static void LoadMasterKey()
     {
-        string[] lines = File.ReadAllLines(masterKeyPath);
-        key = Convert.FromBase64String(lines[0]);
-        iv = Convert.FromBase64String(lines[1]);
-        if (lines.Length < 2)
-        {
-            throw new Exception("Invalid master.key file format.");
-        }
+        string readKey = File.ReadAllText(masterKeyPath);
+        _masterKey = Convert.FromBase64String(readKey);
     }
 }
+
+
