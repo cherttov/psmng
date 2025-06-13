@@ -17,6 +17,8 @@
 
 ## Usage
 > **psmng.exe** has to be added to system variables
+>
+> `data/` is created upon running a command
 ```bash
 psmng <command> [arguments]
 ```
