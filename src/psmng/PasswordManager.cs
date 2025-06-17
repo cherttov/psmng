@@ -68,7 +68,7 @@ public static class PasswordManager
     }
 
     // Add command
-    public static void AddPassword(string _login, string _password)
+    public static void NewPassword(string _login, string _password)
     {
         var _iv = GenerateIV();
         var _encryptedPassword = EncryptData(_password, Convert.FromBase64String(_iv));
@@ -100,6 +100,26 @@ public static class PasswordManager
         File.WriteAllText(filePath, updatedJson);
     }
 
+    // Get command
+    public static void GetPassword(string _login)
+    {
+        var _passwordEntries = JsonDeserializer();
+        var _entryToRead = _passwordEntries.FirstOrDefault(e => e.login == _login);
+
+        if (_entryToRead != null)
+        {
+            var _ivToPass = Convert.FromBase64String(_entryToRead.iv);
+            var _decrypted = DecryptData(_entryToRead.password, _ivToPass);
+
+            Console.WriteLine($"LOGIN: {_login}");
+            Console.WriteLine($"PASSWORD: {_decrypted}");
+        }
+        else
+        {
+            Console.WriteLine($"Login {_login} not found.");
+        }
+    }
+
     // Del command
     public static void DelPassword(string _login)
     {
@@ -120,26 +140,6 @@ public static class PasswordManager
         }
     }
 
-    // Get command
-    public static void GetPassword(string _login)
-    {
-        var _passwordEntries = JsonDeserializer();
-        var _entryToRead = _passwordEntries.FirstOrDefault(e => e.login == _login);
-
-        if (_entryToRead != null)
-        {
-            var _ivToPass = Convert.FromBase64String(_entryToRead.iv);
-            var _decrypted = DecryptData(_entryToRead.password, _ivToPass);
-
-            Console.WriteLine($"login: {_login}");
-            Console.WriteLine($"password: {_decrypted}");
-        }
-        else
-        {
-            Console.WriteLine($"Login {_login} not found.");
-        }
-    }
-
     // List command
     public static void ListPassword()
     {
@@ -149,7 +149,7 @@ public static class PasswordManager
 
         foreach (var entry in _passwordEntries)
         {
-            Console.WriteLine($"    {entry.login} : {entry.password}");
+            Console.WriteLine($"  {entry.login} : {entry.password}");
         }
     }
 
