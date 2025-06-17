@@ -7,6 +7,7 @@ class Program
 {
     static void Main(string[] args)
     {
+        _ = DataManager.masterKey;
         CommandProcessor.Process(args);
     }
 }

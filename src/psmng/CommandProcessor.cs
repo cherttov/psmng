@@ -65,7 +65,7 @@ namespace psmng.src.psmng
                         ShowUsageError("psmng newgroup <group_name>");
                         return;
                     }
-                    Console.WriteLine("Work in progress.");
+                    GroupManager.NewGroup(args[1]);
                     break;
 
                 case "getgroup": // <--     !!!
@@ -74,7 +74,7 @@ namespace psmng.src.psmng
                         ShowUsageError("psmng getgroup <group_name>");
                         return;
                     }
-                    Console.WriteLine("Work in progress.");
+                    GroupManager.GetGroup(args[1]);
                     break;
 
                 case "delgroup": // <--     !!!
@@ -83,7 +83,7 @@ namespace psmng.src.psmng
                         ShowUsageError("psmng delgroup <group_name>");
                         return;
                     }
-                    Console.WriteLine("Work in progress.");
+                    GroupManager.DelGroup(args[1]);
                     break;
 
                 case "listgroup": // <--     !!!
@@ -92,7 +92,7 @@ namespace psmng.src.psmng
                         ShowUsageError("psmng listgroup");
                         return;
                     }
-                    Console.WriteLine("Work in progress.");
+                    GroupManager.ListGroup();
                     break;
 
                 case "addtogroup": // <--     !!!
@@ -105,7 +105,7 @@ namespace psmng.src.psmng
                     break;
 
                 // Path commands
-                case "data-path": // <--     !!!
+                case "getpath":
                     if (args.Length != 1)
                     {
                         ShowUsageError("psmng data-path");
@@ -137,10 +137,10 @@ namespace psmng.src.psmng
             Console.WriteLine("    listgroup                           List all groups.");
             Console.WriteLine("    addtogroup <group_name> <login>     Add login to group.");
             Console.WriteLine("\n  PATH:");
-            Console.WriteLine("    data-path                           Shows program path.");
+            Console.WriteLine("    getpath                             Get program path.");
             Console.WriteLine("\nOPTIONS:");
-            Console.WriteLine("  -h                                   Show help.");
-            Console.WriteLine("  --version                            Show program's version.");
+            Console.WriteLine("  -h                                    Show help.");
+            Console.WriteLine("  --version                             Show program's version.");
         }
 
         static void ShowUsageError(string usage)
