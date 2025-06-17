@@ -7,11 +7,11 @@
 ## Commands
 | Command                | Description                                       |
 |------------------------|---------------------------------------------------|
-| `add [login] [password]` | Adds or updates new login with password         |
+| `new [login] [password]` | Create/Update new login with password           |
 | `get [login]`            | Outputs selected login with decrypted password  |
-| `del [login]`            | Deletes selected login                          |
-| `list`                   | Lists all password entries (encrypted)          |
-| `path `                  | Shows the path to the .json file                |
+| `del [login]`            | Deletes selected login entry                    |
+| `list`                   | List all password entries (encrypted)           |
+| `data-path `             | Shows the path to the data.json file            |
 
 ---
 
