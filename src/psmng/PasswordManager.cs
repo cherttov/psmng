@@ -36,12 +36,12 @@ public static class PasswordManager
         var _passwordEntries = JsonDeserializer();
 
         // Rewrites existing entry || adds new entry
-        var _existingEntry = _passwordEntries.FirstOrDefault(entry => entry.login.Equals(_login, StringComparison.OrdinalIgnoreCase));
+        var _existingEntry = _passwordEntries.FirstOrDefault(e => e.login.Equals(_login, StringComparison.OrdinalIgnoreCase));
         if (_existingEntry != null)
         {
             _existingEntry.password = _encryptedPassword;
             _existingEntry.iv = _iv;
-            Console.WriteLine($"{_login} password has been updated to {_password}");
+            Console.WriteLine($"'{_login}' password has been updated to '{_password}'");
         }
         else
         {
@@ -54,7 +54,7 @@ public static class PasswordManager
 
             _passwordEntries.Add(newEntry);
 
-            Console.WriteLine($"Added {_login} with password {_password}");
+            Console.WriteLine($"Added '{_login}' with password '{_password}'");
         }
 
         string _updatedJson = JsonSerializer.Serialize(_passwordEntries, new JsonSerializerOptions { WriteIndented = true });
@@ -72,12 +72,12 @@ public static class PasswordManager
             var _ivToPass = Convert.FromBase64String(_entryToRead.iv);
             var _decrypted = DecryptData(_entryToRead.password, _ivToPass);
 
-            Console.WriteLine($"LOGIN: {_login}");
-            Console.WriteLine($"PASSWORD: {_decrypted}");
+            Console.WriteLine($"LOGIN:\n  {_login}");
+            Console.WriteLine($"PASSWORD:\n  {_decrypted}");
         }
         else
         {
-            Console.WriteLine($"Login {_login} not found.");
+            Console.WriteLine($"Login '{_login}' not found.");
         }
     }
 
@@ -91,13 +91,13 @@ public static class PasswordManager
         {
             _passwordEntries.Remove(_entryToRemove);
 
-            string updatedJson = JsonSerializer.Serialize(_passwordEntries, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText(filePath, updatedJson);
-            Console.WriteLine($"Deleted {_login} from database.");
+            string _updatedJson = JsonSerializer.Serialize(_passwordEntries, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(filePath, _updatedJson);
+            Console.WriteLine($"Login '{_login}' has been deleted.");
         }
         else
         {
-            Console.WriteLine($"Login {_login} not found.");
+            Console.WriteLine($"Login '{_login}' not found.");
         }
     }
 
@@ -117,7 +117,8 @@ public static class PasswordManager
     // Path command
     public static void PathPassword()
     {
-        Console.WriteLine($"psmng path : {filePath}");
+        string _dir = DataManager.GetProjectRoot();
+        Console.WriteLine($"PSMNG DIRECTORY PATH:\n  {_dir}");
     }
 
     // Encrypt data
