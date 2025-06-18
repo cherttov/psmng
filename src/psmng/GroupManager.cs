@@ -13,11 +13,12 @@ using System.Data;
 public class GroupEntry
 {
     public required string groupName {  get; set; }
+    public required List<string> entriesInGroup { get; set; }
 }
 
 public static class GroupManager 
 {
-    private static string filePath = DataManager.fileGroupPath;
+    private static readonly string filePath = DataManager.fileGroupPath;
 
     // Constructor on run
     static GroupManager()
@@ -36,7 +37,11 @@ public static class GroupManager
         }
         else
         {
-            var _newEntry = new GroupEntry() { groupName = _groupName };
+            var _newEntry = new GroupEntry()
+            {
+                groupName = _groupName,
+                entriesInGroup = new List<string>()
+            };
             _groupEntries.Add(_newEntry);
 
             Console.WriteLine($"Group '{_groupName}' has been created.");
@@ -54,12 +59,15 @@ public static class GroupManager
 
         if (_entryToRead != null)
         {
-            Console.WriteLine($"Logins in group '{_groupName}':");
-            Console.WriteLine($"  work in progress...");
+            Console.WriteLine($"LOGINS IN GROUP '{_groupName}':");
+            foreach (string entry in _entryToRead.entriesInGroup)
+            {
+                Console.WriteLine($"  {entry}");
+            }
         }
         else
         {
-            Console.WriteLine($"Group '{_groupName}' not found");
+            Console.WriteLine($"Group '{_groupName}' not found.");
         }
     }
 
@@ -96,6 +104,35 @@ public static class GroupManager
         }
     }
 
+    // Add To Group command
+    public static void AddToGroup(string _groupName, string _login)
+    {
+        var _groupEntries = JsonDeserializer();
+
+        var _existingEntry = _groupEntries.FirstOrDefault(e => e.groupName.Equals(_groupName, StringComparison.OrdinalIgnoreCase));
+        if (_existingEntry != null)
+        {
+            if (PasswordManager.CheckLogin(_login))
+            {
+                _existingEntry.entriesInGroup.Add(_login);
+
+                Console.WriteLine($"Login '{_login}' was added to group '{_groupName}'.");
+
+                string _updatedJson = JsonSerializer.Serialize(_groupEntries, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(filePath, _updatedJson);
+            }
+            else
+            {
+                Console.WriteLine($"Login '{_login}' not found.");
+            }
+        }
+        else
+        {
+            Console.WriteLine($"Group '{_groupName}' not found.");
+        }
+    }
+
+    // Json Deserializer
     private static List<GroupEntry> JsonDeserializer()
     {
         List<GroupEntry> _entries = new();

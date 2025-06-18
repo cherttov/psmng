@@ -21,8 +21,8 @@ public class PasswordEntry
 
 public static class PasswordManager
 {
-    private static string filePath = DataManager.fileLoginPath;
-    private static byte[] masterKey = DataManager.masterKey;
+    private static readonly string filePath = DataManager.fileLoginPath;
+    private static readonly byte[] masterKey = DataManager.masterKey;
     // Constructor on run
     static PasswordManager()
     {
@@ -31,8 +31,8 @@ public static class PasswordManager
     // Add command
     public static void NewPassword(string _login, string _password)
     {
-        var _iv = GenerateIV();
-        var _encryptedPassword = EncryptData(_password, Convert.FromBase64String(_iv));
+        string _iv = GenerateIV();
+        string _encryptedPassword = EncryptData(_password, Convert.FromBase64String(_iv));
         var _passwordEntries = JsonDeserializer();
 
         // Rewrites existing entry || adds new entry
@@ -65,12 +65,12 @@ public static class PasswordManager
     public static void GetPassword(string _login)
     {
         var _passwordEntries = JsonDeserializer();
-        var _entryToRead = _passwordEntries.FirstOrDefault(e => e.login == _login);
 
+        var _entryToRead = _passwordEntries.FirstOrDefault(e => e.login == _login);
         if (_entryToRead != null)
         {
-            var _ivToPass = Convert.FromBase64String(_entryToRead.iv);
-            var _decrypted = DecryptData(_entryToRead.password, _ivToPass);
+            byte[] _ivToPass = Convert.FromBase64String(_entryToRead.iv);
+            string _decrypted = DecryptData(_entryToRead.password, _ivToPass);
 
             Console.WriteLine($"LOGIN:\n  {_login}");
             Console.WriteLine($"PASSWORD:\n  {_decrypted}");
@@ -85,8 +85,8 @@ public static class PasswordManager
     public static void DelPassword(string _login)
     {
         var _passwordEntries = JsonDeserializer();
-        var _entryToRemove = _passwordEntries.FirstOrDefault(e => e.login == _login);
 
+        var _entryToRemove = _passwordEntries.FirstOrDefault(e => e.login == _login);
         if (_entryToRemove != null)
         {
             _passwordEntries.Remove(_entryToRemove);
@@ -161,12 +161,28 @@ public static class PasswordManager
     {
         using var rnd = RandomNumberGenerator.Create();
 
-        var _iv = new byte[16];
+        byte[] _iv = new byte[16];
         rnd.GetBytes(_iv);
 
         string encoded = Convert.ToBase64String(_iv);
 
         return encoded;
+    }
+
+    // Login existence check for GroupManager
+    public static bool CheckLogin(string _login) 
+    {
+        var _passwordEntries = JsonDeserializer();
+
+        var _entryToRead = _passwordEntries.FirstOrDefault(e => e.login == _login);
+        if (_entryToRead != null)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     // Json deserializer

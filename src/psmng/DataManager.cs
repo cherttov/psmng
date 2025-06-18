@@ -48,7 +48,7 @@ public class DataManager
 
         while (_dir != null)
         {
-            var csprojPath = Path.Combine(_dir.FullName, "psmng.csproj");
+            string csprojPath = Path.Combine(_dir.FullName, "psmng.csproj");
             if (File.Exists(csprojPath))
             {
                 return _dir.FullName;

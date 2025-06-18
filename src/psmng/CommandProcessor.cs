@@ -13,7 +13,7 @@ namespace psmng.src.psmng
             }
             else if (args[0] == "--version")
             {
-                Console.WriteLine("psmng 0.0.8");
+                Console.WriteLine("psmng 0.0.9");
                 return;
             }
 
@@ -101,7 +101,7 @@ namespace psmng.src.psmng
                         ShowUsageError("psmng addtogroup <group_name> <login>");
                         return;
                     }
-                    Console.WriteLine("Work in progress.");
+                    GroupManager.AddToGroup(args[1], args[2]);
                     break;
 
                 // Path commands
