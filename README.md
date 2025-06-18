@@ -12,6 +12,7 @@
 | `del [login]`            | Deletes selected login entry                    |
 | `list`                   | List all password entries (encrypted)           |
 | `data-path `             | Shows the path to the data.json file            |
+| `-h`                     | Shows all available commands                    |
 
 ---
 
