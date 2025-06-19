@@ -132,6 +132,23 @@ public static class GroupManager
         }
     }
 
+    // Group check for PasswordManager
+    public static string CheckGroup(string _login)
+    {
+        var _groupEntries = JsonDeserializer();
+
+        var _existingEntry = _groupEntries.FirstOrDefault(e => e.entriesInGroup.Contains(_login));
+        if (_existingEntry != null)
+        {
+            return _existingEntry.groupName;
+        }
+        else
+        {
+            return "None";
+        }
+    }
+
+
     // Json Deserializer
     private static List<GroupEntry> JsonDeserializer()
     {

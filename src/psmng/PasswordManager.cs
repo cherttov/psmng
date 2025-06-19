@@ -72,7 +72,10 @@ public static class PasswordManager
             byte[] _ivToPass = Convert.FromBase64String(_entryToRead.iv);
             string _decrypted = DecryptData(_entryToRead.password, _ivToPass);
 
+            string _group = GroupManager.CheckGroup(_login);
+
             Console.WriteLine($"LOGIN:\n  {_login}");
+            Console.WriteLine($"GROUP:\n  {_group}");
             Console.WriteLine($"PASSWORD:\n  {_decrypted}");
         }
         else

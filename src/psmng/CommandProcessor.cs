@@ -13,7 +13,7 @@ namespace psmng.src.psmng
             }
             else if (args[0] == "--version")
             {
-                Console.WriteLine("psmng 0.0.9");
+                Console.WriteLine("psmng 0.1.0");
                 return;
             }
 
@@ -25,7 +25,7 @@ namespace psmng.src.psmng
                 case "new":
                     if (args.Length != 3)
                     {
-                        ShowUsageError("psmng new <login> <password>");
+                        ShowUsageError("new <login> <password>");
                         return;
                     }
                     PasswordManager.NewPassword(args[1], args[2]);
@@ -34,7 +34,7 @@ namespace psmng.src.psmng
                 case "get":
                     if (args.Length != 2)
                     {
-                        ShowUsageError("psmng get <login>");
+                        ShowUsageError("get <login>");
                         return;
                     }
                     PasswordManager.GetPassword(args[1]);
@@ -43,7 +43,7 @@ namespace psmng.src.psmng
                 case "del":
                     if (args.Length != 2)
                     {
-                        ShowUsageError("psmng del <login>");
+                        ShowUsageError("del <login>");
                         return;
                     }
                     PasswordManager.DelPassword(args[1]);
@@ -52,53 +52,53 @@ namespace psmng.src.psmng
                 case "list":
                     if (args.Length != 1)
                     {
-                        ShowUsageError("psmng list");
+                        ShowUsageError("list");
                         return;
                     }
                     PasswordManager.ListPassword();
                     break;
 
                 // Group entry commands
-                case "newgroup": // <--     !!!
+                case "newgroup":
                     if (args.Length != 2)
                     {
-                        ShowUsageError("psmng newgroup <group_name>");
+                        ShowUsageError("newgroup <group_name>");
                         return;
                     }
                     GroupManager.NewGroup(args[1]);
                     break;
 
-                case "getgroup": // <--     !!!
+                case "getgroup":
                     if (args.Length != 2)
                     {
-                        ShowUsageError("psmng getgroup <group_name>");
+                        ShowUsageError("getgroup <group_name>");
                         return;
                     }
                     GroupManager.GetGroup(args[1]);
                     break;
 
-                case "delgroup": // <--     !!!
+                case "delgroup":
                     if (args.Length != 2)
                     {
-                        ShowUsageError("psmng delgroup <group_name>");
+                        ShowUsageError("delgroup <group_name>");
                         return;
                     }
                     GroupManager.DelGroup(args[1]);
                     break;
 
-                case "listgroup": // <--     !!!
+                case "listgroup":
                     if (args.Length != 1)
                     {
-                        ShowUsageError("psmng listgroup");
+                        ShowUsageError("listgroup");
                         return;
                     }
                     GroupManager.ListGroup();
                     break;
 
-                case "addtogroup": // <--     !!!
+                case "addtogroup":
                     if (args.Length != 3)
                     {
-                        ShowUsageError("psmng addtogroup <group_name> <login>");
+                        ShowUsageError("addtogroup <group_name> <login>");
                         return;
                     }
                     GroupManager.AddToGroup(args[1], args[2]);
@@ -108,12 +108,21 @@ namespace psmng.src.psmng
                 case "getpath":
                     if (args.Length != 1)
                     {
-                        ShowUsageError("psmng data-path");
+                        ShowUsageError("data-path");
                         return;
                     }
                     PasswordManager.PathPassword();
                     break;
-                
+
+                case "help":
+                    if (args.Length != 1)
+                    {
+                        ShowUsageError("help");
+                        return;
+                    }
+                    ShowHelp();
+                    break;
+
                 // Default case
                 default:
                     Console.WriteLine("ERROR: Unknown command.\n");
@@ -146,7 +155,7 @@ namespace psmng.src.psmng
         static void ShowUsageError(string usage)
         {
             Console.WriteLine($"Invalid arguments.");
-            Console.WriteLine($"USAGE:\n    {usage}");
+            Console.WriteLine($"USAGE:\n    psmng {usage}");
         }
     }
 }
