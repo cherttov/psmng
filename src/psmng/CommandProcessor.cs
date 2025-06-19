@@ -13,7 +13,7 @@ namespace psmng.src.psmng
             }
             else if (args[0] == "--version")
             {
-                Console.WriteLine("psmng 0.1.0");
+                Console.WriteLine("psmng 0.1.1");
                 return;
             }
 
@@ -59,46 +59,46 @@ namespace psmng.src.psmng
                     break;
 
                 // Group entry commands
-                case "newgroup":
+                case "new-group":
                     if (args.Length != 2)
                     {
-                        ShowUsageError("newgroup <group_name>");
+                        ShowUsageError("new-group <group_name>");
                         return;
                     }
                     GroupManager.NewGroup(args[1]);
                     break;
 
-                case "getgroup":
+                case "get-group":
                     if (args.Length != 2)
                     {
-                        ShowUsageError("getgroup <group_name>");
+                        ShowUsageError("get-group <group_name>");
                         return;
                     }
                     GroupManager.GetGroup(args[1]);
                     break;
 
-                case "delgroup":
+                case "del-group":
                     if (args.Length != 2)
                     {
-                        ShowUsageError("delgroup <group_name>");
+                        ShowUsageError("del-group <group_name>");
                         return;
                     }
                     GroupManager.DelGroup(args[1]);
                     break;
 
-                case "listgroup":
+                case "list-group":
                     if (args.Length != 1)
                     {
-                        ShowUsageError("listgroup");
+                        ShowUsageError("list-group");
                         return;
                     }
                     GroupManager.ListGroup();
                     break;
 
-                case "addtogroup":
+                case "add-togroup":
                     if (args.Length != 3)
                     {
-                        ShowUsageError("addtogroup <group_name> <login>");
+                        ShowUsageError("add-togroup <group_name> <login>");
                         return;
                     }
                     GroupManager.AddToGroup(args[1], args[2]);
@@ -114,6 +114,44 @@ namespace psmng.src.psmng
                     PasswordManager.PathPassword();
                     break;
 
+                // Master password commands
+                case "set-masterpassword":
+                    if (args.Length != 2)
+                    {
+                        ShowUsageError("set-masterpassword <new_password");
+                        return;
+                    }
+                    Console.WriteLine("Work in progress...");
+                    break;
+
+                case "get-masterpassword":
+                    if (args.Length != 2)
+                    {
+                        ShowUsageError("get-masterpassword");
+                        return;
+                    }
+                    Console.WriteLine("Work in progress...");
+                    break;
+
+                case "set-timeout":
+                    if (args.Length != 2)
+                    {
+                        ShowUsageError("set-timeout <int_minutes>");
+                        return;
+                    }
+                    Console.WriteLine("Work in progress...");
+                    break;
+
+                case "get-timeout":
+                    if (args.Length != 1)
+                    {
+                        ShowUsageError("get-timeout");
+                        return;
+                    }
+                    Console.WriteLine("Work in progress...");
+                    break;
+
+                // Help command
                 case "help":
                     if (args.Length != 1)
                     {
@@ -134,22 +172,27 @@ namespace psmng.src.psmng
         {
             Console.WriteLine("USAGE:\n  psmng <command> [options]");
             Console.WriteLine("\nCOMMANDS:");
-            Console.WriteLine("\n  LOGIN:");
-            Console.WriteLine("    new <login> <password>              Create new login entry with password.");
-            Console.WriteLine("    get <login>                         Get selected login's password.");
-            Console.WriteLine("    del <login>                         Delete selected login.");
-            Console.WriteLine("    list                                List all passwords.");
+            Console.WriteLine("  LOGIN:");
+            Console.WriteLine("    new <login> <password>               Create new login entry with password.");
+            Console.WriteLine("    get <login>                          Get selected login's password.");
+            Console.WriteLine("    del <login>                          Delete selected login.");
+            Console.WriteLine("    list                                 List all passwords.");
             Console.WriteLine("\n  GROUPS:");
-            Console.WriteLine("    newgroup <group_name>               Create new group.");
-            Console.WriteLine("    getgroup <group_name>               Show login entries in selected group.");
-            Console.WriteLine("    delgroup <group_name>               Delete existing group.");
-            Console.WriteLine("    listgroup                           List all groups.");
-            Console.WriteLine("    addtogroup <group_name> <login>     Add login to group.");
+            Console.WriteLine("    new-group <group_name>               Create new group.");
+            Console.WriteLine("    get-group <group_name>               Show login entries in selected group.");
+            Console.WriteLine("    del-group <group_name>               Delete existing group.");
+            Console.WriteLine("    list-group                           List all groups.");
+            Console.WriteLine("    add-togroup <group_name> <login>     Add login to group.");
             Console.WriteLine("\n  PATH:");
-            Console.WriteLine("    getpath                             Get program path.");
+            Console.WriteLine("    get-path                             Get program path.");
+            Console.WriteLine("\n  MASTER PASSWORD:");
+            Console.WriteLine("    set-masterpassword <new_password>    Set new master password.");
+            Console.WriteLine("    get-masterpassword                   Show current master password.");
+            Console.WriteLine("    set-timeout <minutes>                Set master password timeout.");
+            Console.WriteLine("    get-timeout                          Get master password timeout.");
             Console.WriteLine("\nOPTIONS:");
-            Console.WriteLine("  -h                                    Show help.");
-            Console.WriteLine("  --version                             Show program's version.");
+            Console.WriteLine("  -h                                     Show help.");
+            Console.WriteLine("  --version                              Show program's version.");
         }
 
         static void ShowUsageError(string usage)
