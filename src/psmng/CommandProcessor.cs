@@ -13,7 +13,7 @@ namespace psmng.src.psmng
             }
             else if (args[0] == "--version")
             {
-                Console.WriteLine("psmng 0.1.1");
+                Console.WriteLine("psmng 0.1.3");
                 return;
             }
 

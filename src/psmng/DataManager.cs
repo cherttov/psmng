@@ -10,6 +10,8 @@ public class DataManager
 {
     public static string fileLoginPath = Path.Combine(GetProjectRoot(), "data", "psmng_store.json");
     public static string fileGroupPath = Path.Combine(GetProjectRoot(), "data", "groups.json");
+    public static string masterPasswordPath = Path.Combine(GetProjectRoot(), "data", "master.password");
+    public static string sessionPath = Path.Combine(GetProjectRoot(), "data", "session.token");
     public static string masterKeyPath = Path.Combine(GetProjectRoot(), "data", "master.key");
 
     public static byte[] masterKey = Array.Empty<byte>();
@@ -34,10 +36,16 @@ public class DataManager
             File.WriteAllText(fileGroupPath, "[]");
         }
 
+        if (!File.Exists(masterPasswordPath))
+        {
+            CreateMasterPassword();
+        }
+
         if (!File.Exists(masterKeyPath))
         {
             GenerateMasterKey();
         }
+
         LoadMasterKey();
     }
 
@@ -76,5 +84,27 @@ public class DataManager
     {
         string readKey = File.ReadAllText(masterKeyPath);
         masterKey = Convert.FromBase64String(readKey);
+    }
+
+    // Create Master Password
+    private static void CreateMasterPassword()
+    {
+        Console.WriteLine("CREATE MASTER PASSWORD");
+
+        while (true)
+        {
+            Console.Write("> ");
+            string? _input = Console.ReadLine();
+
+            if (_input != null)
+            {
+                File.WriteAllText(masterPasswordPath, _input);
+                break;
+            }
+            else
+            {
+                Console.WriteLine("ERROR:\n  Master password cannot be empty.");
+            }
+        }
     }
 }
