@@ -11,8 +11,7 @@ public class MasterPassword
     private static readonly string sessionFile = DataManager.sessionPath;
 
     private static int timeout = 30;
-
-    public static bool isEntered = false; // for now
+    public static bool placeholder = true;
 
     // Constructor on run
     static MasterPassword()
@@ -20,7 +19,6 @@ public class MasterPassword
         // func CheckEntry()
         if (CheckSession())
         {
-            isEntered = true;
             return;
         }
         else
@@ -31,7 +29,6 @@ public class MasterPassword
 
             if (CheckEnteredPassword(enteredPassword))
             {
-                isEntered = true;
                 CreateSessionFile();
             }
             else
@@ -51,19 +48,19 @@ public class MasterPassword
     // Get master password
     public static void GetMasterPassword()
     {
-
+        string _masterPassword = LoadMasterPassword();
+        Console.WriteLine($"CURRENT MASTER PASSWORD:\n  {_masterPassword}");
     }
 
     // Set timeout
-    public static void SetTimeout(int _minutes)
+    public static void SetTimeout(string _minutes)
     {
-
     }
 
     // Get timeout
     public static void GetTimeout()
     {
-        
+        Console.WriteLine($"CURRENT TIMEOUT:\n  '{timeout}' minutes.");
     }
 
     // Check if entered password matches master password
@@ -76,8 +73,7 @@ public class MasterPassword
     // Load Master Password
     private static string LoadMasterPassword()
     {
-        string _readKey = File.ReadAllText(filePath);
-        string _masterPassword = Convert.ToString(_readKey);
+        string _masterPassword = File.ReadAllText(filePath);
         return _masterPassword;
     }
 
@@ -99,7 +95,7 @@ public class MasterPassword
         try
         {
             string _time = File.ReadAllText(sessionFile);
-            DateTime _authTime = DateTime.Parse(_time);
+            DateTime _authTime = DateTime.Parse(_time).ToUniversalTime();
             return (DateTime.UtcNow - _authTime).TotalMinutes < timeout;
         }
         catch

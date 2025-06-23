@@ -13,7 +13,7 @@ namespace psmng.src.psmng
             }
             else if (args[0] == "--version")
             {
-                Console.WriteLine("psmng 0.1.3");
+                Console.WriteLine("psmng 0.1.4");
                 return;
             }
 
@@ -105,7 +105,7 @@ namespace psmng.src.psmng
                     break;
 
                 // Path commands
-                case "getpath":
+                case "get-path":
                     if (args.Length != 1)
                     {
                         ShowUsageError("data-path");
@@ -148,7 +148,7 @@ namespace psmng.src.psmng
                         ShowUsageError("get-timeout");
                         return;
                     }
-                    Console.WriteLine("Work in progress...");
+                    MasterPassword.GetTimeout();
                     break;
 
                 // Help command

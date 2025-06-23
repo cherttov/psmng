@@ -121,7 +121,7 @@ public static class PasswordManager
     public static void PathPassword()
     {
         string _dir = DataManager.GetProjectRoot();
-        Console.WriteLine($"PSMNG DIRECTORY PATH:\n  {_dir}");
+        Console.WriteLine($"PSMNG DIRECTORY PATH:\n  '{_dir}'");
     }
 
     // Encrypt data

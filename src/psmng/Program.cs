@@ -7,7 +7,7 @@ class Program
 {
     static void Main(string[] args)
     {
-        _ = MasterPassword.isEntered;
+        _ = MasterPassword.placeholder;
         _ = DataManager.masterKey;
         CommandProcessor.Process(args);
     }
