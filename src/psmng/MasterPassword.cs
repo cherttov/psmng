@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
+using psmng.src.psmng;
 
 public class MasterPassword
 {
@@ -40,9 +41,10 @@ public class MasterPassword
     }
 
     // Set master password
-    public static void SetMasterPassword(string _password)
+    public static void SetMasterPassword(string _newPassword)
     {
-
+        File.WriteAllText(filePath, _newPassword);
+        Console.WriteLine($"Master password has been changed to '{_newPassword}'");
     }
 
     // Get master password
@@ -55,12 +57,22 @@ public class MasterPassword
     // Set timeout
     public static void SetTimeout(string _minutes)
     {
+        if (int.TryParse(_minutes, out int _parsedMinutes) && _parsedMinutes >= 0)
+        {
+            timeout = _parsedMinutes; // new timeout file
+            // combine all data files to 2 files, add more encryption, optimize program more
+            Console.WriteLine($"Timeout has been changed to {_parsedMinutes}");
+        }
+        else
+        {
+            Console.WriteLine($"ERROR: Invalid timeout value, please enter positive number.");
+        }
     }
 
     // Get timeout
     public static void GetTimeout()
     {
-        Console.WriteLine($"CURRENT TIMEOUT:\n  '{timeout}' minutes.");
+        Console.WriteLine($"CURRENT TIMEOUT:\n  {timeout} minutes.");
     }
 
     // Check if entered password matches master password

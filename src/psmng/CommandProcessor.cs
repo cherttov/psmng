@@ -13,7 +13,7 @@ namespace psmng.src.psmng
             }
             else if (args[0] == "--version")
             {
-                Console.WriteLine("psmng 0.1.4");
+                Console.WriteLine("psmng 0.1.5");
                 return;
             }
 
@@ -108,7 +108,7 @@ namespace psmng.src.psmng
                 case "get-path":
                     if (args.Length != 1)
                     {
-                        ShowUsageError("data-path");
+                        ShowUsageError("get-path");
                         return;
                     }
                     PasswordManager.PathPassword();
@@ -121,16 +121,16 @@ namespace psmng.src.psmng
                         ShowUsageError("set-masterpassword <new_password");
                         return;
                     }
-                    Console.WriteLine("Work in progress...");
+                    MasterPassword.SetMasterPassword(args[1]);
                     break;
 
                 case "get-masterpassword":
-                    if (args.Length != 2)
+                    if (args.Length != 1)
                     {
                         ShowUsageError("get-masterpassword");
                         return;
                     }
-                    Console.WriteLine("Work in progress...");
+                    MasterPassword.GetMasterPassword();
                     break;
 
                 case "set-timeout":
@@ -198,7 +198,7 @@ namespace psmng.src.psmng
         static void ShowUsageError(string usage)
         {
             Console.WriteLine($"Invalid arguments.");
-            Console.WriteLine($"USAGE:\n    psmng {usage}");
+            Console.WriteLine($"USAGE:\n  psmng {usage}");
         }
     }
 }
